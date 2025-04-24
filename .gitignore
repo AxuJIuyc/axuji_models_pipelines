@@ -1,0 +1,8 @@
+*.pt
+*.pth
+*.onnx
+*.rknn
+*.whl
+
+models_zoo/object_detection/yolov8/rknn/rknn_model_zoo
+models_zoo/object_detection/yolov8/rknn/ultralytics_yolov8
