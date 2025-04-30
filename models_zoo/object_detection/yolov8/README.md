@@ -44,6 +44,32 @@ python train/train.py
 To convert a model to one of the following formats, first install the required [dependencies](../../../deployment/README.md). Then follow these steps:
 
 ## 4.1 ONNX
+### Get ONNX weights
+```
+cd onnx
+
+# If you haven't activated it yet
+conda activate yolov8det
+
+# Edit and run export.py
+python export.py
+```
+
+### Install environment 
+```
+# You can install a clean environment 
+# or use one that has already been created
+conda create -n onnx python==3.12
+conda activate onnx
+
+# Install requirements
+pip install -r requirements.txt
+```
+### Run
+```
+# Edit and run predict.py
+python predict.py
+```
 
 ## 4.2 RKNN
 Go to "rknn" environment if it has been created.
@@ -73,6 +99,7 @@ nano ultralytics/cfg/default.yaml
 #### 4.2.1. Convert pt to onnx
 ```
 cd rknn
+# Edit and run deploy2onnx.py
 python deploy2onnx.py
 ```
 Check the input size when exporting the model. If necessary, change batch_size parameter in ultralytics/cfg/default.yaml to any value.
@@ -113,6 +140,17 @@ watch sudo cat /sys/kernel/debug/rknpu/load
 ```
 
 ## 4.3 OpenVINO
+```
+cd openvino
+
+pip install -r requirements.txt
+
+# Export weights
+ovc your_model_file.onnx
+
+# Edit and run predict.py
+python predict.py
+```
 
 # 5. Metrics
 `CPU desktop - Intel Core i9-14900HX`  
@@ -144,9 +182,9 @@ Size: `256x256` pxls
     <td>yolov8n</td>
     <td>87</td>
     <td>140</td>
-    <td>N/A</td>
-    <td>N/A</td>
-    <td>N/A</td>
+    <td>95</td>
+    <td>83</td>
+    <td>120</td>
     <td>2.5</td>
     <td>65</td>
     <td>58</td>
@@ -155,9 +193,9 @@ Size: `256x256` pxls
     <td>yolov8m</td>
     <td>33</td>
     <td>112</td>
-    <td>N/A</td>
-    <td>N/A</td>
-    <td>N/A</td>
+    <td>21</td>
+    <td>37</td>
+    <td>95</td>
     <td>0.76</td>
     <td>38</td>
     <td>21</td>
