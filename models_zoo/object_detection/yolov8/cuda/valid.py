@@ -4,7 +4,7 @@ from ultralytics import YOLO
 from tqdm import tqdm
 
 
-def validation(folder, model):
+def validation(folder, model, filter=[]):
     """_summary_
 
     Args:
@@ -26,7 +26,7 @@ def validation(folder, model):
         pred = res.boxes.data.cpu().numpy()
         # pred = res.boxes.data.cpu().tolist()
         
-        gt = np.array(read_anno(lbl))
+        gt = np.array(read_anno(lbl, filter))
         if len(gt) == 0:
             pass
         else:
@@ -75,13 +75,15 @@ def get_data(folders):
                 ])
     return data
 
-def read_anno(txt):
+def read_anno(txt, filter=[]):
     with open(txt, 'r') as f:
         text = f.read().splitlines()
     anno = []
     for row in text:
         if len(row) > 3:
             lbl, x,y,w,h = map(float, row.split())
+            if int(lbl) in filter:
+                continue 
             anno.append([lbl, x,y,w,h])
     return anno
 
@@ -110,11 +112,12 @@ def compute_iou_matrix(gt_boxes: np.ndarray, pred_boxes: np.ndarray) -> np.ndarr
     gt_x1, gt_y1, gt_w, gt_h = gt_boxes[:, 0], gt_boxes[:, 1], gt_boxes[:, 2], gt_boxes[:, 3]
     pred_x1, pred_y1, pred_x2, pred_y2 = pred_boxes[:, 0], pred_boxes[:, 1], pred_boxes[:, 2], pred_boxes[:, 3]
 
-    gt_x2 = gt_x1 + gt_w
-    gt_y2 = gt_y1 + gt_h
+    gt_x2 = gt_x1 + gt_w/2
+    gt_y2 = gt_y1 + gt_h/2
+    gt_x1 = gt_x1 - gt_w/2
+    gt_y1 = gt_y1 - gt_h/2
+    
     pred_w, pred_h = pred_x2-pred_x1, pred_y2-pred_y1
-    # pred_x2 = pred_x1 + pred_w
-    # pred_y2 = pred_y1 + pred_h
 
     # Broadcasting boxes for vectorized computation
     inter_x1 = np.maximum(gt_x1[:, None], pred_x1[None, :])
@@ -128,6 +131,7 @@ def compute_iou_matrix(gt_boxes: np.ndarray, pred_boxes: np.ndarray) -> np.ndarr
 
     union_area = gt_area[:, None] + pred_area[None, :] - inter_area
     iou = np.where(union_area > 0, inter_area / union_area, 0.0)
+    
     return iou
 
 
@@ -257,11 +261,10 @@ def compute_map(
     return aps, class_stats
 
 def compute_metrics(lbls, preds):
-    aps, class_stats = compute_map(lbls, preds, iou_thresholds=[x / 100 for x in range(50, 100, 5)])
-    map50_95 = aps.copy()
-    aps, class_stats = compute_map(lbls, preds, iou_thresholds=[0.5])
-    for k in aps:
-        class_stats[k]['map50'] = aps[k]
+    map50_95, class_stats = compute_map(lbls, preds, iou_thresholds=[x / 100 for x in range(50, 100, 5)])
+    map50, class_stats = compute_map(lbls, preds, iou_thresholds=[0.5])
+    for k in map50:
+        class_stats[k]['map50'] = map50[k]
         class_stats[k]['map50_95'] = map50_95[k]
     return class_stats
 
@@ -271,15 +274,15 @@ def sum_metrics(metrics):
         for k, v in m.items():
             if k not in classes:
                 classes.update({k:[{}, 0]})
-            classes[k][1] += 1
-            for name in v:
+            classes[k][1] += 1 # counter
+            for name in v: # per metric
                 if name not in classes[k][0]:
                     classes[k][0].update({name:0})
                 classes[k][0][name] += v[name]
-    # for k, v in classes.items():
-    #     ms, l = v
-    #     for m in ms:
-    #         classes[k][0][m] = round(classes[k][0][m] / l, 3)
+    for k, v in classes.items():
+        ms, l = v
+        for m in ms:
+            classes[k][0][m] = round(classes[k][0][m] / l, 3)
     for k in classes:
         classes[k] = classes[k][0]
     return classes
@@ -289,7 +292,7 @@ def sum_metrics(metrics):
 if __name__ == "__main__":
     data = "../../../../data/valid/roofs/"
     model = "crossroads_roofs-yolov8m-1.2.3.4.9_12(best).pt"
-    metrics = validation(data, model)
+    metrics = validation(data, model, filter=[1])
     print("\tP\tR\tf1\tmap50\tmap50_95")
     for m, v in metrics.items():
         print("{}:\t{}\t{}\t{}\t{}\t{}".format(
