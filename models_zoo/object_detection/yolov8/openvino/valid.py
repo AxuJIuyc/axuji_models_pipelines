@@ -1,9 +1,10 @@
 import os
-from ultralytics import YOLO
 from tqdm import tqdm
+from predict import YOLOOpenvino, pre_process
+# from ..onnx.predict import pre_process
+import cv2
 
-
-def validation(folder, model, filter=[]):
+def validation(folder, model, net_size=256, filter=[]):
     """_summary_
 
     Args:
@@ -11,7 +12,8 @@ def validation(folder, model, filter=[]):
         model (str): path to model file.pt
     """
     # Init model
-    yolo = YOLO(model)
+    model = YOLOOpenvino(model_path=model, net_size=net_size)
+      
     # get folders
     folders = get_folders(folder)
     # get data
@@ -20,10 +22,14 @@ def validation(folder, model, filter=[]):
     # preds, gts = [], []
     metrics = []
     for im, lbl in tqdm(data, desc='Validation'):
-        res = yolo(im, verbose=False)[0]
-        h,w = res.orig_shape # H, W
-        pred = res.boxes.data.cpu().numpy()
-        
+        image = cv2.imread(im)
+        im, ratio, dwdh = pre_process(image)
+        h,w,c = im.shape
+        pred = model.predict(im)
+
+        if pred is None:
+            pred = np.array([])
+                        
         gt = np.array(read_anno(lbl, filter))
         if len(gt) == 0:
             pass
@@ -280,9 +286,10 @@ def sum_metrics(metrics):
 
 if __name__ == "__main__":
     data = "../../../../data/valid/roofs/"
-    model = "crossroads_yolov8n.pt"
-    metrics = validation(data, model, filter=[1])
-
+    model = "crossroads_yolov8m.xml"
+    
+    net_size = 256
+    metrics = validation(data, model, net_size, filter=[1])
     print("\tP\tR\tf1\tmap50\tmap50_95")
     for m, v in metrics.items():
         print("{}:\t{}\t{}\t{}\t{}\t{}".format(
@@ -293,4 +300,6 @@ if __name__ == "__main__":
             round(v["map50"], 3),
             round(v["map50_95"], 3)
         ))
+    
+    
     

@@ -167,6 +167,85 @@ class YOLOOpenvino:
         else:
             print("No detections")
         return im
+
+def letterbox(
+        im,
+        new_shape=(640, 640),
+        color=(114, 114, 114),
+        auto=True,
+        scaleup=True,
+        stride=32,
+    ) -> tuple[np.ndarray, float, tuple[float, float]]:
+        """
+        Resizes and pads an image to fit a new shape while maintaining aspect ratio.
+
+        Parameters
+        ----------
+        im : np.ndarray
+            The input image to be resized and padded.
+        new_shape : tuple[int, int], optional
+            The desired output shape (height, width). Default is (640, 640).
+        color : tuple[int, int, int], optional
+            The color for padding. Default is (114, 114, 114).
+        auto : bool, optional
+            If True, adjusts padding to be a multiple of stride. Default is True.
+        scaleup : bool, optional
+            If True, allows scaling up the image. If False, only scales down. Default is True.
+        stride : int, optional
+            The stride for padding adjustment. Default is 32.
+
+        Returns
+        -------
+        tuple[np.ndarray, float, tuple[float, float]]
+            A tuple containing the resized and padded image,
+            the scaling ratio, and the padding values.
+        """
+
+        shape = im.shape[:2]  # current shape [height, width]
+        if isinstance(new_shape, int):
+            new_shape = (new_shape, new_shape)
+
+        # Scale ratio (new / old)
+        r = min(new_shape[0] / shape[0], new_shape[1] / shape[1])
+        if not scaleup:  # only scale down, do not scale up (for better val mAP)
+            r = min(r, 1.0)
+
+        # Compute padding
+        new_unpad = int(round(shape[1] * r)), int(round(shape[0] * r))
+        dw, dh = new_shape[1] - new_unpad[0], new_shape[0] - new_unpad[1]  # wh padding
+
+        if auto:  # minimum rectangle
+            dw, dh = np.mod(dw, stride), np.mod(dh, stride)  # wh padding
+
+        dw /= 2  # divide padding into 2 sides
+        dh /= 2
+
+        if shape[::-1] != new_unpad:  # resize
+            im = cv2.resize(im, new_unpad, interpolation=cv2.INTER_LINEAR)
+        top, bottom = int(round(dh - 0.1)), int(round(dh + 0.1))
+        left, right = int(round(dw - 0.1)), int(round(dw + 0.1))
+        im = cv2.copyMakeBorder(
+            im, top, bottom, left, right, cv2.BORDER_CONSTANT, value=color
+        )  # add border
+        return im, r, (dw, dh)
+
+def pre_process(
+        input_img: np.ndarray, 
+        new_shape=(256,256)
+    ) -> tuple[np.ndarray, float, tuple[float, float]]:
+    """
+    Args:
+        input_img (np.ndarray): image array
+        new_shape (tuple, optional): (Height, Width). Defaults to (256,256).
+
+    Returns:
+        tuple[np.ndarray, float, tuple[float, float]]: _description_
+    """
+    img = input_img.copy()
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    img, ratio, dwdh = letterbox(img, new_shape=new_shape, auto=False)
+
+    return img, ratio, dwdh
     
 if __name__ == "__main__":
     modelpath = "crossroads_yolov8n.xml"

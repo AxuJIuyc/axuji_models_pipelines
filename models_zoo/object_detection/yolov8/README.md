@@ -209,54 +209,42 @@ Size: `256x256` pxls
     <thead>
         <tr>
             <th scope="col" rowspan="2">Model</th>
-            <th scope="col" colspan="3">torch</th>
-            <th scope="col" colspan="3">onnx</th>
-            <th scope="col" colspan="3">rknn</th>
-            <th scope="col" colspan="3">openvino</th>
+            <th scope="col" colspan="2">torch</th>
+            <th scope="col" colspan="2">onnx</th>
+            <th scope="col" colspan="2">rknn</th>
+            <th scope="col" colspan="2">openvino</th>
         </tr>
         <tr>
-            <th scope="col">A</th>
-            <th scope="col">P</th>
-            <th scope="col">R</th>
-            <th scope="col">A</th>
-            <th scope="col">P</th>
-            <th scope="col">R</th>
-            <th scope="col">A</th>
-            <th scope="col">P</th>
-            <th scope="col">R</th>
-            <th scope="col">A</th>
-            <th scope="col">P</th>
-            <th scope="col">R</th>
+            <th scope="col">map50</th>
+            <th scope="col">map50_95</th>
+            <th scope="col">map50</th>
+            <th scope="col">map50_95</th>
+            <th scope="col">map50</th>
+            <th scope="col">map50_95</th>
+            <th scope="col">map50</th>
+            <th scope="col">map50_95</th>
         </tr>
     </thead>
   <tr>
     <td>yolov8n</td>
+    <td>0.517</td>
+    <td>0.255</td>
+    <td>0.539</td>
+    <td>0.287</td>
     <td>N/A</td>
     <td>N/A</td>
-    <td>N/A</td>
-    <td>N/A</td>
-    <td>N/A</td>
-    <td>N/A</td>
-    <td>N/A</td>
-    <td>N/A</td>
-    <td>N/A</td>
-    <td>N/A</td>
-    <td>N/A</td>
-    <td>N/A</td>
+    <td>0.568</td>
+    <td>0.318</td>
   </tr>
   <tr>
     <td>yolov8m</td>
+    <td>0.527</td>
+    <td>0.292</td>
+    <td>0.545</td>
+    <td>0.298</td>
     <td>N/A</td>
     <td>N/A</td>
-    <td>N/A</td>
-    <td>N/A</td>
-    <td>N/A</td>
-    <td>N/A</td>
-    <td>N/A</td>
-    <td>N/A</td>
-    <td>N/A</td>
-    <td>N/A</td>
-    <td>N/A</td>
-    <td>N/A</td>
+    <td>0.558</td>
+    <td>0.318</td>
   </tr>
 </table>

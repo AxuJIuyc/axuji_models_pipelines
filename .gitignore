@@ -12,3 +12,5 @@ models_zoo/object_detection/yolov8/rknn/ultralytics_yolov8
 data/valid/*
 
 *.ipynb
+
+__pycache__
