@@ -203,7 +203,7 @@ Size: `256x256` pxls
 </table>
 
 ## 5.2 Correctness
-`(A)ccuracy, (P)recision, (R)ecall` for validation data
+`map50`, `map50_95` for validation data
 
 <table>
     <thead>
