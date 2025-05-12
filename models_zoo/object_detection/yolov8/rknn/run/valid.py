@@ -1,9 +1,9 @@
 import os
 from tqdm import tqdm
-from predict import init, pre_process, inference, post_process
 import cv2
+from main import RK3588_v2
 
-def validation(folder, model, providers, filter=[]):
+def validation(folder, model, net_size=256, filter=[]):
     """_summary_
 
     Args:
@@ -11,27 +11,18 @@ def validation(folder, model, providers, filter=[]):
         model (str): path to model file.pt
     """
     # Init model
-    session, input_name, output_name = init(model, providers)    
+    rk3588 = RK3588_v2(model, net_size=net_size)
     # get folders
     folders = get_folders(folder)
     # get data
     data = get_data(folders)
     # valid
     # preds, gts = [], []
+    h = w = net_size
     metrics = []
     for im, lbl in tqdm(data, desc='Validation'):
         image = cv2.imread(im)
-        im, ratio, dwdh = pre_process(image)
-        pred = inference(im, session, input_name, output_name)
-        boxes, classes, scores = post_process(pred, dwdh, ratio, CONF_TH=0.3, IOU_TH=0.7)
-                
-        b,c,h,w = im.shape # H, W
-        if boxes is not None:
-            scores = np.expand_dims(scores, axis=1)
-            classes = np.expand_dims(classes, axis=1)
-            pred = np.concatenate([boxes,scores,classes], axis=1)
-        else:
-            pred = np.array([])
+        _, pred = rk3588.run(image, draw=False)
             
         gt = np.array(read_anno(lbl, filter))
         if len(gt) == 0:
@@ -89,7 +80,6 @@ def read_anno(txt, filter=[]):
 # /metrics/object_detection_metrics.py
 from typing import List, Tuple, Dict
 import numpy as np
-# from collections import defaultdict, Counter
 
 
 BBox = Tuple[float, float, float, float, float]  # (label, x, y, w, h)
@@ -288,14 +278,10 @@ def sum_metrics(metrics):
 # ======== <-- Calculate metrics ==========================
 
 if __name__ == "__main__":
-    data = "../../../../data/valid/roofs/"
-    model = "crossroads_yolov8n.onnx"
+    data = "../images/valid/roofs/"
+    model = "../roofs/crossroads_yolov8n_fp.rknn"
     
-    providers = [
-                "CUDAExecutionProvider", 
-                "CPUExecutionProvider"
-            ]
-    metrics = validation(data, model, providers, filter=[1])
+    metrics = validation(data, model, net_size=256, filter=[1])
     print("\tP\tR\tf1\tmap50\tmap50_95")
     for m, v in metrics.items():
         print("{}:\t{}\t{}\t{}\t{}\t{}".format(

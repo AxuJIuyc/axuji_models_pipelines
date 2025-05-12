@@ -211,10 +211,13 @@ Size: `256x256` pxls
             <th scope="col" rowspan="2">Model</th>
             <th scope="col" colspan="2">torch</th>
             <th scope="col" colspan="2">onnx</th>
-            <th scope="col" colspan="2">rknn</th>
+            <th scope="col" colspan="2">rknn_i8</th>
+            <th scope="col" colspan="2">rknn_fp</th>
             <th scope="col" colspan="2">openvino</th>
         </tr>
         <tr>
+            <th scope="col">map50</th>
+            <th scope="col">map50_95</th>
             <th scope="col">map50</th>
             <th scope="col">map50_95</th>
             <th scope="col">map50</th>
@@ -231,8 +234,10 @@ Size: `256x256` pxls
     <td>0.255</td>
     <td>0.539</td>
     <td>0.287</td>
-    <td>N/A</td>
-    <td>N/A</td>
+    <td>0.512</td>
+    <td>0.272</td>
+    <td>0.525</td>
+    <td>0.28</td>
     <td>0.568</td>
     <td>0.318</td>
   </tr>
@@ -242,6 +247,8 @@ Size: `256x256` pxls
     <td>0.292</td>
     <td>0.545</td>
     <td>0.298</td>
+    <td>N/A</td>
+    <td>N/A</td>
     <td>N/A</td>
     <td>N/A</td>
     <td>0.558</td>
