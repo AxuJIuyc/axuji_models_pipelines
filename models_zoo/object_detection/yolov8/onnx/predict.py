@@ -226,7 +226,7 @@ if __name__ == "__main__":
     impath = "../../../../data/images/sat_1794919.jpg"
     N = 500
     providers = [
-                # "CUDAExecutionProvider", 
+                "CUDAExecutionProvider", 
                 "CPUExecutionProvider"
             ]
     
