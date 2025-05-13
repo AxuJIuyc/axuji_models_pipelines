@@ -9,7 +9,7 @@
     />
 </h1>
 
-<table>
+<table align="center">
     <tr>
         <td> <img src="../../../data/images/sat_1794919.jpg" height="256"/> </td>
         <td> <img src="cuda/res.jpg" height="256"/> </td>
