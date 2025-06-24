@@ -96,6 +96,10 @@
         </tr>
     </thead>
     <tr>
+        <th><a href="models_zoo/segmentation/Unet">UNet</a></th>
+        <th>-</th><th>-</th><th>-</th><th>-</th>
+    </tr>
+    <tr>
         <th><a href="models_zoo/segmentation/pidnet">PIDNet</a></th>
         <th>-</th><th>-</th><th>-</th><th>-</th>
     </tr>

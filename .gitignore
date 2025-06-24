@@ -14,3 +14,4 @@ data/valid/*
 *.ipynb
 
 __pycache__
+tools/log_dir
