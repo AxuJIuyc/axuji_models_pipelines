@@ -91,6 +91,7 @@ pip install -e .
 ```
 
 #### Edit file
+If you want specify a custom batch and image size when exporting.
 ```
 nano ultralytics/engine/exporter.py
 ```
@@ -102,7 +103,6 @@ torch.onnx.export(
     ...
 )
 ```
-Now you can specify a custom batch and image size when exporting.
 
 
 
