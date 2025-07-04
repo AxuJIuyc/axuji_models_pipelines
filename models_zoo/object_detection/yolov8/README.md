@@ -76,24 +76,35 @@ Go to "rknn" environment if it has been created.
 
 ### Special install
 Install ultralytics_yolov8 special for converting pt -> onnx (optimized for rknn).
+
+Clone repo
 ```
-# Clone repo
 git clone https://github.com/airockchip/ultralytics_yolov8
-
-# Go to cloned directory
-cd ultralytics_yolov8
-
-# Install as package
-pip install -e .
-
-# Edit cfg file
-nano ultralytics/cfg/default.yaml
-"""
-  model: {path/to/model.pt}
-  batch: 1
-  imgsz: {your img size}
-"""
 ```
+Go to cloned directory
+```
+cd ultralytics_yolov8
+```
+Install as package
+```
+pip install -e .
+```
+
+#### Edit file
+```
+nano ultralytics/engine/exporter.py
+```
+in `Exporter.export_rknn` method:
+```
+torch.onnx.export(
+    self.model,
+    self.im[0:self.args.batch,:,:,:],
+    ...
+)
+```
+Now you can specify a custom batch and image size when exporting.
+
+
 
 ### Convert model to .rknn
 #### 4.2.1. Convert pt to onnx
@@ -114,7 +125,7 @@ git clone https://github.com/airockchip/rknn_model_zoo
 # Go to directory with converter
 cd rknn_model_zoo/examples/yolov8/python
 
-# Edit `convert.py`
+# Edit `convert.py` (optional)
 DATASET_PATH = "path/to/dataset.txt"
 DEFAULT_RKNN_PATH = "path/to/model.rknn"
 

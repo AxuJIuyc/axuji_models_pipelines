@@ -15,3 +15,4 @@ data/valid/*
 
 __pycache__
 tools/log_dir
+.vscode
